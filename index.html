@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ScaleScore Quiz</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+  h1 { text-align: center; }
+  .question { margin-bottom: 20px; }
+  .answers label { display: block; margin: 5px 0; }
+  #result { font-weight: bold; font-size: 1.2em; margin-top: 20px; }
+  button { padding: 10px 20px; font-size: 1em; }
+</style>
+</head>
+<body>
+
+<h1>ScaleScore: Business Idea Quiz</h1>
+
+<form id="quizForm">
+
+  <div class="question">
+    <p>1. How strong is your market potential?</p>
+    <div class="answers">
+      <label><input type="radio" name="q1" value="3" required> High</label>
+      <label><input type="radio" name="q1" value="2"> Medium</label>
+      <label><input type="radio" name="q1" value="1"> Low</label>
+    </div>
+  </div>
+
+  <div class="question">
+    <p>2. How feasible is your execution plan?</p>
+    <div class="answers">
+      <label><input type="radio" name="q2" value="3" required> Very feasible</label>
+      <label><input type="radio" name="q2" value="2"> Somewhat feasible</label>
+      <label><input type="radio" name="q2" value="1"> Not feasible</label>
+    </div>
+  </div>
+
+  <div class="question">
+    <p>3. How appealing is your brand identity?</p>
+    <div class="answers">
+      <label><input type="radio" name="q3" value="3" required> Strong and unique</label>
+      <label><input type="radio" name="q3" value="2"> Average</label>
+      <label><input type="radio" name="q3" value="1"> Weak</label>
+    </div>
+  </div>
+
+  <button type="submit">Get ScaleScore</button>
+</form>
+
+<div id="result"></div>
+
+<script>
+document.getElementById('quizForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const q1 = parseInt(document.querySelector('input[name="q1"]:checked').value);
+  const q2 = parseInt(document.querySelector('input[name="q2"]:checked').value);
+  const q3 = parseInt(document.querySelector('input[name="q3"]:checked').value);
+
+  const total = q1 + q2 + q3; // max 9 points
+
+  const scorePercent = Math.round((total / 9) * 100);
+
+  let feedback = '';
+  if (scorePercent >= 80) {
+    feedback = 'Excellent potential! Your idea is on the right track.';
+  } else if (scorePercent >= 50) {
+    feedback = 'Good effort! There are some areas to improve.';
+  } else {
+    feedback = 'Needs work. Consider revisiting your business plan.';
+  }
+
+  document.getElementById('result').innerHTML = 
+    `<p>Your ScaleScore is <strong>${scorePercent}/100</strong></p><p>${feedback}</p>`;
+});
+</script>
+
+</body>
+</html>
