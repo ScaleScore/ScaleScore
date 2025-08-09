@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ScaleScore Business Quiz</title>
+<style>
+  body {
+    background-color: #000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    max-width: 800px;
+  }
+  h1, h2 {
+    color: #0af;
+  }
+  label {
+    display: block;
+    margin: 8px 0 4px;
+  }
+  input[type="radio"] {
+    margin-right: 8px;
+  }
+  button {
+    background-color: #0af;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    color: #000;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  button:hover {
+    background-color: #08c;
+  }
+  #result {
+    margin-top: 30px;
+    border-top: 1px solid #333;
+    padding-top: 20px;
+  }
+  ul {
+    list-style: disc;
+    margin-left: 20px;
+  }
+</style>
+</head>
+<body>
+
+<h1>ScaleScore: How Scalable Is Your Business Idea?</h1>
+<p>Answer these questions to get a personalised scale score and tips on strengths and areas to improve.</p>
+
+<form id="scaleScoreForm">
+
+  <h2>1. What sector is your business in?</h2>
+  <label><input type="radio" name="q1" value="3" required> Technology (high growth, innovative)</label>
+  <label><input type="radio" name="q1" value="2"> Retail (direct customer engagement)</label>
+  <label><input type="radio" name="q1" value="2"> Food & Beverage (high competition, quality focus)</label>
+  <label><input type="radio" name="q1" value="2"> Health & Wellness (growing consumer demand)</label>
+  <label><input type="radio" name="q1" value="1"> Finance (regulated, trust-focused)</label>
+  <label><input type="radio" name="q1" value="1"> Other sector</label>
+
+  <h2>2. Who are your main customers?</h2>
+  <label><input type="radio" name="q2" value="3" required> B2B (business to business)</label>
+  <label><input type="radio" name="q2" value="3"> B2C (business to consumer)</label>
+  <label><input type="radio" name="q2" value="2"> Both B2B and B2C</label>
+
+  <h2>3. What is your primary revenue model?</h2>
+  <label><input type="radio" name="q3" value="3" required> Product sales</label>
+  <label><input type="radio" name="q3" value="3"> Service fees</label>
+  <label><input type="radio" name="q3" value="2"> Advertising revenue</label>
+  <label><input type="radio" name="q3" value="3"> Subscriptions</label>
+  <label><input type="radio" name="q3" value="2"> Licensing</label>
+
+  <h2>4. What pricing tier does your product/service target?</h2>
+  <label><input type="radio" name="q4" value="3" required> Low cost / mass market</label>
+  <label><input type="radio" name="q4" value="3"> Mid-range</label>
+  <label><input type="radio" name="q4" value="2"> Luxury / premium</label>
+
+  <h2>5. Which marketing channels do you primarily use?</h2>
+  <label><input type="radio" name="q5" value="3" required> Digital ads (paid acquisition)</label>
+  <label><input type="radio" name="q5" value="3"> Organic social media</label>
+  <label><input type="radio" name="q5" value="2"> Word of mouth / referrals</label>
+  <label><input type="radio" name="q5" value="2"> Retail / physical presence</label>
+  <label><input type="radio" name="q5" value="1"> Other / none</label>
+
+  <h2>6. What is your average customer acquisition cost (CAC)?</h2>
+  <label><input type="radio" name="q6" value="3" required> Under £10 (efficient marketing)</label>
+  <label><input type="radio" name="q6" value="2"> £10 - £50 (moderate efficiency)</label>
+  <label><input type="radio" name="q6" value="1"> Over £50 (high cost)</label>
+  <label><input type="radio" name="q6" value="2"> Not calculated yet</label>
+
+  <h2>7. What is your current monthly marketing budget?</h2>
+  <label><input type="radio" name="q7" value="1" required> £0 - £500 (limited budget)</label>
+  <label><input type="radio" name="q7" value="2"> £500 - £2,000 (moderate budget)</label>
+  <label><input type="radio" name="q7" value="3"> £2,000+ (aggressive growth)</label>
+
+  <h2>8. What funding have you secured so far?</h2>
+  <label><input type="radio" name="q8" value="2" required> None (bootstrapping)</label>
+  <label><input type="radio" name="q8" value="3"> Friends & family investment</label>
+  <label><input type="radio" name="q8" value="3"> Angel investment</label>
+  <label><input type="radio" name="q8" value="3"> Venture capital</label>
+
+  <h2>9. What stage is your product/service at?</h2>
+  <label><input type="radio" name="q9" value="3" required> Launched and generating revenue</label>
+  <label><input type="radio" name="q9" value="2"> Beta testing / limited launch</label>
+  <label><input type="radio" name="q9" value="1"> Concept / idea stage</label>
+
+  <h2>10. What is your target market reach?</h2>
+  <label><input type="radio" name="q10" value="3" required> Global</label>
+  <label><input type="radio" name="q10" value="2"> National</label>
+  <label><input type="radio" name="q10" value="1"> Local / regional</label>
+
+  <h2>11. How competitive is your market?</h2>
+  <label><input type="radio" name="q11" value="3" required> First mover / unique product</label>
+  <label><input type="radio" name="q11" value="2"> Few competitors</label>
+  <label><input type="radio" name="q11" value="1"> Many established competitors</label>
+
+  <h2>12. How often do customers typically use your product/service?</h2>
+  <label><input type="radio" name="q12" value="3" required> Daily</label>
+  <label><input type="radio" name="q12" value="2"> Weekly</label>
+  <label><input type="radio" name="q12" value="1"> Monthly or occasionally</label>
+
+  <h2>13. What is the typical customer lifetime value (CLV)?</h2>
+  <label><input type="radio" name="q13" value="1" required> Low (volume-driven)</label>
+  <label><input type="radio" name="q13" value="2"> Moderate</label>
+  <label><input type="radio" name="q13" value="3"> High (long-term loyalty)</label>
+
+  <button type="submit">Get Your ScaleScore</button>
+</form>
+
+<div id="result"></div>
+
+<script>
+document.getElementById('scaleScoreForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const totalQuestions = 13;
+  let totalScore = 0;
+  let strengths = [];
+  let improvements = [];
+
+  // Feedback by question and answer index
+  const feedback = {
+    1: [
+      "Technology sector offers high innovation and scalability.",
+      "Retail has strong customer connection but can be competitive.",
+      "Food & Beverage needs consistent quality and differentiation.",
+      "Health & Wellness benefits from growing consumer focus on wellbeing.",
+      "Finance demands trust and regulatory compliance.",
+      "Other sectors require niche strategy and market knowledge."
+    ],
+    2: [
+      "B2B offers larger contracts and longer-term relationships.",
+      "B2C can scale fast but requires strong marketing.",
+      "Serving both markets diversifies risk but adds complexity."
+    ],
+    3: [
+      "Product sales have straightforward revenue but need inventory management.",
+      "Service fees build recurring income with ongoing delivery.",
+      "Advertising revenue depends on strong traffic and engagement.",
+      "Subscriptions provide predictable recurring revenue.",
+      "Licensing requires strong IP protection."
+    ],
+    4: [
+      "Low cost / mass market products scale well through volume.",
+      "Mid-range offers balance of quality and accessibility.",
+      "Luxury relies on exclusivity and brand reputation."
+    ],
+    5: [
+      "Digital ads are effective for rapid growth but can be costly.",
+      "Organic social media grows brand trust over time.",
+      "Word of mouth is powerful but slower to scale.",
+      "Retail presence builds local credibility but with higher fixed costs.",
+      "Other methods may need testing for effectiveness."
+    ],
+    6: [
+      "Low CAC indicates efficient customer acquisition.",
+      "Moderate CAC is manageable but should be optimized.",
+      "High CAC risks unsustainable growth.",
+      "Uncalculated CAC suggests need for better tracking."
+    ],
+    7: [
+      "Limited marketing budget may restrict scaling potential.",
+      "Moderate budget supports steady growth and testing.",
+      "High budget allows aggressive marketing and expansion."
+    ],
+    8: [
+      "Bootstrapping means careful resource management and validation.",
+      "Friends & family investment provides early runway and support.",
+      "Angel investment brings capital and mentorship.",
+      "Venture capital accelerates growth but dilutes ownership."
+    ],
+    9: [
+      "Launched products give valuable real user feedback.",
+      "Beta testing stage lets you refine product-market fit.",
+      "Concept stage requires validation and market research."
+    ],
+    10: [
+      "Global reach offers the biggest growth but with complexity.",
+      "National focus balances reach and manageability.",
+      "Local markets are easier to penetrate but limit scale."
+    ],
+    11: [
+      "First mover advantage can create strong market position.",
+      "Few competitors allow differentiation opportunities.",
+      "Many competitors require strong USP and pricing."
+    ],
+    12: [
+      "Daily use drives strong engagement and stable revenue.",
+      "Weekly use needs regular re-engagement strategies.",
+      "Monthly/occasional use requires effective retention tactics."
+    ],
+    13: [
+      "Low CLV demands high volume sales for profitability.",
+      "Moderate CLV allows balanced marketing investment.",
+      "High CLV supports higher acquisition costs and loyalty."
+    ],
+  };
+
+  // Logic for context-aware scoring (example):
+  // If answers conflict or indicate risk, reduce score slightly.
+  // For instance, if no funding but already launched = good
+  // If high CAC but low marketing budget = warning
+  // If many competitors + low USP score, reduce points.
