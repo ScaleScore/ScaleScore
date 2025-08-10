@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ScaleScore — Results</title>
+<style>
+  :root{ --cyan:#00FFFF; --bg:#000; --panel:#111; --muted:#bbb; }
+  body{ background:var(--bg); color:#fff; font-family:Inter, Arial, sans-serif; margin:0; padding:28px; display:flex; justify-content:center; }
+  .card{ width:100%; max-width:820px; background:var(--panel); border-radius:12px; padding:28px; box-sizing:border-box; }
+  h1{ color:var(--cyan); margin:0 0 8px 0; text-align:center;}
+  .top-row{ display:flex; gap:20px; align-items:center; flex-wrap:wrap; justify-content:center; }
+  .visual{ width:220px; height:220px; position:relative; }
+  svg{ transform: rotate(-90deg); width:220px; height:220px; filter: drop-shadow(0 8px 24px rgba(0,255,255,0.06)); }
+  circle.bg { stroke: #222; stroke-width:16; fill:none; }
+  circle.bar { stroke: var(--cyan); stroke-width:16; stroke-linecap:round; fill:none; stroke-dasharray: 440; stroke-dashoffset:440; transition:stroke-dashoffset 1s ease; filter: drop-shadow(0 6px 16px rgba(0,255,255,0.25)); }
+  .percent{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:38px; color:var(--cyan); font-weight:800; text-shadow:0 2px 12px rgba(0,255,255,0.08); }
+  .report{ margin-top:18px; background:#0c0c0c; padding:18px; border-radius:10px; }
+  h3{ color:var(--cyan); margin:6px 0 8px 0; }
+  ul{ margin:8px 0 12px 18px; color:#ddd; }
+  .small{ color:#aaa; font-size:13px; margin-top:8px; text-align:center; }
+  .back{ margin-top:12px; text-align:center; }
+  .btn{ background:var(--cyan); color:#000; padding:10px 14px; border-radius:8px; border:none; font-weight:700; cursor:pointer; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Your ScaleScore Result</h1>
+
+    <div class="top-row">
+      <div class="visual" aria-hidden="true">
+        <svg viewBox="0 0 150 150" id="svgProg">
+          <circle class="bg" cx="75" cy="75" r="70" />
+          <circle class="bar" cx="75" cy="75" r="70" id="progBar" />
+        </svg>
+        <div class="percent" id="percentText">0%</div>
+      </div>
+
+      <div style="flex:1; min-width:260px;">
+        <div class="report" id="summaryBox">
+          <h3 id="brandTitle">ScaleScore</h3>
+          <div id="scoreBadge" style="font-size:18px; margin-top:6px;">Score: —</div>
+          <div id="adjustNote" class="small"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:18px;">
+      <h3>Strengths</h3>
+      <ul id="strengthsList"></ul>
+
+      <h3>Areas to improve</h3>
+      <ul id="improveList"></ul>
+
+      <h3>Recommendations</h3>
+      <ul id="recList"></ul>
+
+      <h3>Buzzword summary (from uploaded docs)</h3>
+      <div id="buzzSummary" style="color:#ddd;"></div>
+
+      <div class="back">
+        <button class="btn" id="backBtn">Back to Quiz</button>
+      </div>
+
+      <p class="small">Documents were parsed in your browser only; nothing was uploaded or stored server-side.</p>
+    </div>
+  </div>
+
+<script>
+/* Read result object from sessionStorage */
+const raw = sessionStorage.getItem('scalescore_result');
+if(!raw){
+  document.getElementById('summaryBox').innerHTML = '<strong>No result found.</strong><p class="small">Go back and complete the quiz.</p>';
+} else {
+  const result = JSON.parse(raw);
+  // show brand
+  document.getElementById('brandTitle').textContent = result.brand ? result.brand : 'ScaleScore Result';
+
+  // animated circular bar
+  const bar = document.getElementById('progBar');
+  const percentText = document.getElementById('percentText');
+  const score = result.score || 0;
+  // dasharray for r=70 => ~ 2*pi*70 = 439.8 approx - use 440
+  const circumference = 2 * Math.PI * 70;
+  bar.style.strokeDasharray = circumference;
+
+  // animate from 0 to score
+  let current = 0;
+  const step = Math.max(1, Math.round(score / 40)); // controls speed
+  const interval = setInterval(()=>{
+    if(current >= score) { clearInterval(interval); }
+    const offset = circumference - (current/100)*circumference;
+    bar.style.strokeDashoffset = offset;
+    percentText.textContent = current + '%';
+    current += step;
+  }, 18);
+
+  // ensure final exact state
+  setTimeout(()=>{
+    const finalOffset = circumference - (score/100)*circumference;
+    bar.style.strokeDashoffset = finalOffset;
+    percentText.textContent = score + '%';
+  }, 1000);
+
+  // summary and lists
+  document.getElementById('scoreBadge').textContent = `Score: ${score}/100`;
+  const adj = result.buzzAdjust || 0;
+  document.getElementById('adjustNote').textContent = adj ? `Score adjusted by ${adj} based on deck buzzwords.` : '';
+
+  // strengths
+  const sList = document.getElementById('strengthsList');
+  if(result.strengths && result.strengths.length) result.strengths.forEach(s => {
+    const li = document.createElement('li'); li.textContent = s; sList.appendChild(li);
+  }); else { sList.innerHTML = '<li>None detected from your inputs.</li>'; }
+
+  // improvements
+  const iList = document.getElementById('improveList');
+  if(result.improvements && result.improvements.length) result.improvements.forEach(it => {
+    const li = document.createElement('li'); li.textContent = it; iList.appendChild(li);
+  }); else { iList.innerHTML = '<li>None detected — good sign.</li>'; }
+
+  // recommendations
+  const rList = document.getElementById('recList');
+  if(result.recommendations && result.recommendations.length) result.recommendations.forEach(r => {
+    const li = document.createElement('li'); li.textContent = r; rList.appendChild(li);
+  }); else { rList.innerHTML = '<li>General: focus on product-market fit and unit economics.</li>'; }
+
+  // buzzword summary
+  const buzz = result.buzzSummary || {positive:{}, negative:{}};
+  const summaryEl = document.getElementById('buzzSummary');
+  let html = '';
+  if(Object.keys(buzz.positive).length){
+    html += '<div style="color:#bfffbf;"><strong>Positive keywords:</strong><ul>';
+    for(const [k,c] of Object.entries(buzz.positive)){ html += `<li>${k} — ${c} matches</li>`; }
+    html += '</ul></div>';
+  }
+  if(Object.keys(buzz.negative).length){
+    html += '<div style="color:#ffbfbf;"><strong>Negative keywords:</strong><ul>';
+    for(const [k,c] of Object.entries(buzz.negative)){ html += `<li>${k} — ${c} matches</li>`; }
+    html += '</ul></div>';
+  }
+  if(!html) html = '<div class="small">No buzzwords found (or no document uploaded).</div>';
+  summaryEl.innerHTML = html;
+}
+
+/* Back button clears session storage result and navigates back to index */
+document.getElementById('backBtn').addEventListener('click', ()=>{
+  // keep result but navigate back
+  window.location.href = 'index.html';
+});
+</script>
+</body>
+</html>
