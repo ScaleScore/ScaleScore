@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ScaleScore — Results</title>
+<style>
+  :root{ --cyan:#00FFFF; --bg:#000; --panel:#121212; --muted:#9aa; }
+  *{box-sizing:border-box}
+  body{ margin:0; background:var(--bg); color:#fff; font-family:Inter,Arial,sans-serif; display:flex; justify-content:center; padding:28px; }
+  .card{ width:100%; max-width:980px; background:var(--panel); border-radius:14px; padding:26px; box-shadow:0 12px 40px rgba(0,0,0,0.6); }
+  h1{ margin:0; color:var(--cyan); text-align:center; font-weight:800; }
+  .top{ display:flex; gap:18px; align-items:center; justify-content:center; margin-top:14px; flex-wrap:wrap; }
+  .vis{ width:240px; height:240px; position:relative; }
+  svg{ transform:rotate(-90deg); width:240px; height:240px; }
+  circle.bg{ stroke:#222; stroke-width:16; fill:none; }
+  circle.bar{ stroke:var(--cyan); stroke-width:16; stroke-linecap:round; fill:none; stroke-dasharray: 440; stroke-dashoffset:440; filter: drop-shadow(0 8px 24px rgba(0,255,255,0.12)); transition:stroke-dashoffset 1s ease; }
+  .percent { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:44px; color:var(--cyan); font-weight:800; }
+  .summary { flex:1; min-width:320px; background:#0b0b0b; border-radius:10px; padding:14px; }
+  .kicker{ color:#bfefff; font-weight:700; }
+  .section{ margin-top:18px; }
+  ul{ margin:8px 0 12px 18px; color:#ddd; }
+  .small{ color:#9aa; font-size:13px; }
+  .backRow{ margin-top:18px; text-align:center; }
+  .btn{ background:var(--cyan); color:#000; border:none; padding:10px 14px; border-radius:10px; font-weight:800; cursor:pointer; }
+</style>
+</head>
+<body>
+  <div class="card" role="main">
+    <h1>ScaleScore — Idea Assessment</h1>
+
+    <div class="top" role="region" aria-label="Result summary">
+      <div class="vis" aria-hidden="true">
+        <svg viewBox="0 0 150 150">
+          <circle class="bg" cx="75" cy="75" r="70"></circle>
+          <circle id="bar" class="bar" cx="75" cy="75" r="70"></circle>
+        </svg>
+        <div class="percent" id="percent">0%</div>
+      </div>
+
+      <div class="summary" id="summaryPanel">
+        <div class="kicker" id="brandName">Your Project</div>
+        <div style="margin-top:6px; font-weight:700;" id="scaleBadge">ScaleScore: —</div>
+        <div class="small" id="noteArea" style="margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3 style="color:var(--cyan); margin:6px 0;">Strengths</h3>
+      <ul id="strengths"></ul>
+
+      <h3 style="color:var(--cyan); margin:6px 0;">Areas to Improve</h3>
+      <ul id="improvements"></ul>
+
+      <h3 style="color:var(--cyan); margin:6px 0;">Recommendations</h3>
+      <ul id="recs"></ul>
+
+      <h3 style="color:var(--cyan); margin:6px 0;">Analysis details</h3>
+      <div id="analysisDetails" class="small"></div>
+    </div>
+
+    <div class="backRow">
+      <button id="backBtn" class="btn">Back to Quiz</button>
+    </div>
+
+    <p class="small" style="margin-top:12px; text-align:center;">Documents are analysed in your browser only; nothing is uploaded to a server.</p>
+  </div>
+
+<script>
+/* read result */
+const raw = sessionStorage.getItem('scalescore_result');
+if(!raw){
+  document.getElementById('brandName').textContent = 'No result found';
+  document.getElementById('scaleBadge').textContent = 'Please take the assessment first.';
+} else {
+  const res = JSON.parse(raw);
+
+  // title / brand
+  document.getElementById('brandName').textContent = res.brand || 'Your Project';
+  document.getElementById('scaleBadge').textContent = `ScaleScore: ${res.scaleScore}/100`;
+
+  // note about adjustments
+  const buzzAdj = res.signals && res.signals.buzzAdjust ? Math.round(res.signals.buzzAdjust * 10)/10 : 0;
+  document.getElementById('noteArea').textContent = buzzAdj ? `ScaleScore adjusted ${buzzAdj > 0 ? 'up' : 'down'} by ${Math.abs(buzzAdj)} based on deck & idea signals.` : 'Assessment based on your idea text and any documents provided.';
+
+  // animate circular bar
+  const bar = document.getElementById('bar');
+  const percentEl = document.getElementById('percent');
+  const score = res.scaleScore || 0;
+  const circ = 2 * Math.PI * 70; // r=70
+  bar.style.strokeDasharray = circ;
+  bar.style.strokeDashoffset = circ;
+
+  // animate
+  let cur = 0;
+  const step = Math.max(1, Math.round(score / 40));
+  const interval = setInterval(()=>{
+    if(cur >= score) { clearInterval(interval); }
+    const off = circ - (cur/100)*circ;
+    bar.style.strokeDashoffset = off;
+    percentEl.textContent = cur + '%';
+    cur += step;
+  }, 18);
+
+  setTimeout(()=>{
+    const finalOff = circ - (score/100)*circ;
+    bar.style.strokeDashoffset = finalOff;
+    percentEl.textContent = score + '%';
+  }, 1000);
+
+  // lists
+  const strengthsEl = document.getElementById('strengths');
+  const improvementsEl = document.getElementById('improvements');
+  const recsEl = document.getElementById('recs');
+
+  if(res.strengths && res.strengths.length){
+    res.strengths.forEach(s => { const li=document.createElement('li'); li.textContent = s; strengthsEl.appendChild(li);});
+  } else { strengthsEl.innerHTML = '<li>No clear strengths detected automatically.</li>'; }
+
+  if(res.improvements && res.improvements.length){
+    res.improvements.forEach(s => { const li=document.createElement('li'); li.textContent = s; improvementsEl.appendChild(li);});
+  } else { improvementsEl.innerHTML = '<li>None flagged.</li>'; }
+
+  if(res.recommendations && res.recommendations.length){
+    res.recommendations.forEach(s => { const li=document.createElement('li'); li.textContent = s; recsEl.appendChild(li);});
+  } else { recsEl.innerHTML = '<li>General: tighten your one-line pitch and define target customer clearly.</li>'; }
+
+  // analysis details: show some signals and top tokens
+  const details = [];
+  const sig = res.signals || {};
+  details.push(`Clarity: ${(sig.clarity || 0).toFixed(2)} · Originality: ${(sig.originality || 0).toFixed(2)} · Market: ${(sig.market || 0).toFixed(2)}`);
+  details.push(`Uniqueness: ${(sig.uniqueness || 0).toFixed(2)} · Traction-signal: ${(sig.traction || 0).toFixed(2)}`);
+  // buzz summary
+  if(sig.scan){
+    const pos = sig.scan.positive || {}, neg = sig.scan.negative || {};
+    if(Object.keys(pos).length){
+      details.push('Positive signals in documents: ' + Object.keys(pos).map(k=>`${k} (${pos[k]})`).join(', '));
+    }
+    if(Object.keys(neg).length){
+      details.push('Potential concerns in documents: ' + Object.keys(neg).map(k=>`${k} (${neg[k]})`).join(', '));
+    }
+  }
+  document.getElementById('analysisDetails').textContent = details.join(' · ');
+
+}
+
+// Back
+document.getElementById('backBtn').addEventListener('click', ()=>{
+  window.location.href = 'index.html';
+});
+</script>
+</body>
+</html>
