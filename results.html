@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Your Scale Score</title>
+<style>
+  body {
+    background-color: #000;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+  }
+  .circle {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: auto;
+  }
+  .circle svg {
+    transform: rotate(-90deg);
+  }
+  .circle .score-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    color: #00FFFF;
+    text-shadow: 0 0 10px #00FFFF;
+  }
+  .feedback {
+    margin-top: 20px;
+    font-size: 20px;
+    background-color: #111;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #00FFFF;
+  }
+</style>
+</head>
+<body>
+
+<h1>Your Scale Score</h1>
+<div class="circle">
+  <svg width="200" height="200">
+    <circle cx="100" cy="100" r="90" stroke="#333" stroke-width="15" fill="none"/>
+    <circle id="progressCircle" cx="100" cy="100" r="90" stroke="#00FFFF" stroke-width="15" fill="none" stroke-linecap="round" stroke-dasharray="565" stroke-dashoffset="565"/>
+  </svg>
+  <div class="score-text" id="scoreText">0%</div>
+</div>
+
+<div class="feedback" id="feedbackText"></div>
+
+<script>
+function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+}
+
+let score = parseInt(getQueryParam('score')) || 0;
+let feedback = getQueryParam('feedback') || '';
+
+document.getElementById("feedbackText").innerText = feedback;
+
+// Animate circle
+let circle = document.getElementById("progressCircle");
+let dashArray = 565; // circumference
+let offset = dashArray - (dashArray * score / 100);
+
+let current = 0;
+let interval = setInterval(() => {
+    if (current >= score) clearInterval(interval);
+    document.getElementById("scoreText").innerText = current + "%";
+    let currentOffset = dashArray - (dashArray * current / 100);
+    circle.style.strokeDashoffset = currentOffset;
+    current++;
+}, 20);
+</script>
+
+</body>
+</html>
