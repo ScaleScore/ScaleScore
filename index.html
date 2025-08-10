@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ScaleScore — Idea Assessment</title>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+
+<style>
+  :root{
+    --cyan:#00FFFF;
+    --bg:#000;
+    --panel:#121212;
+    --muted:#9aa;
+    --card-radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:#fff; font-family:Inter,Arial,Helvetica,sans-serif;
+    display:flex; justify-content:center; padding:28px;
+  }
+  .card{
+    width:100%; max-width:960px; background:var(--panel); border-radius:var(--card-radius);
+    padding:26px; box-shadow:0 10px 40px rgba(0,0,0,0.6);
+  }
+  h1{ color:var(--cyan); margin:0 0 6px 0; font-weight:800; text-align:center; }
+  p.lead { color:var(--muted); text-align:center; margin:0 0 18px 0; }
+  .row{ display:flex; gap:18px; flex-wrap:wrap; }
+  label{ display:block; margin-top:12px; color:#e6eef0; font-weight:600; }
+  input[type="text"], textarea, select, input[type="file"] {
+    width:100%; padding:10px 12px; margin-top:8px; border-radius:10px; border:1px solid #262626;
+    background:#0b0b0b; color:#fff; font-size:14px;
+  }
+  textarea { min-height:100px; resize:vertical; }
+  .half { flex:1 1 48%; min-width:260px; }
+  .full { flex:1 1 100%; }
+  .small { color:#aab; font-size:13px; margin-top:6px; }
+  .submitRow{ margin-top:18px; display:flex; gap:12px; align-items:center; }
+  button.primary{
+    background:var(--cyan); color:#000; border:none; font-weight:800; padding:12px 18px; border-radius:10px;
+    cursor:pointer; flex:0 0 240px;
+  }
+  button.ghost{ background:transparent; border:1px solid #2a2a2a; color:#ddd; padding:10px 12px; border-radius:8px; cursor:pointer; }
+  .questions { margin-top:14px; display:grid; gap:12px; grid-template-columns:1fr; }
+  @media(min-width:900px){ .questions{ grid-template-columns:1fr 1fr; } }
+  .questionBox { background:#0b0b0b; padding:12px; border-radius:10px; border:1px solid #1a1a1a; }
+  .note { font-size:13px; color:#9aa; margin-top:8px; }
+  footer.small { text-align:center; margin-top:18px; color:#888; font-size:13px; }
+
+</style>
+</head>
+<body>
+  <div class="card" role="main" aria-labelledby="title">
+    <h1 id="title">ScaleScore — Idea Assessment</h1>
+    <p class="lead">Get a professional, personalised idea assessment. Enter your idea details, upload a pitch deck (optional) and get a detailed ScaleScore and recommendations.</p>
+
+    <label for="brand">Brand / project name</label>
+    <input id="brand" type="text" placeholder="e.g. Aurora Labs (optional)">
+
+    <label for="sector">Sector (choose the best fit)</label>
+    <select id="sector">
+      <option value="tech">Technology</option>
+      <option value="retail">Retail & e-commerce</option>
+      <option value="services">Services</option>
+      <option value="food">Food & Beverage</option>
+      <option value="finance">Finance / FinTech</option>
+      <option value="other">Other</option>
+    </select>
+
+    <label for="pdfInput">Upload pitch deck or docs (PDF) — optional</label>
+    <input id="pdfInput" type="file" accept="application/pdf" multiple />
+    <div class="small">Files are processed locally in your browser for analysis only and are not sent to any server. Use only files you are comfortable sharing.</div>
+
+    <hr style="border:none; height:1px; background:#141414; margin:18px 0;">
+
+    <form id="quizForm">
+      <div class="questions">
+
+        <!-- Open-ended: short and focused -->
+        <div class="questionBox full">
+          <label for="one_liner">One-line description of your idea</label>
+          <input id="one_liner" type="text" placeholder="Describe your idea in one sentence (what you do & for whom)" required>
+          <div class="small">Example: “Subscription meal kits that deliver ready-to-cook regional recipes for busy professionals.”</div>
+        </div>
+
+        <div class="questionBox full">
+          <label for="problem">What problem are you solving? (2–3 short sentences)</label>
+          <textarea id="problem" placeholder="Describe the pain point or need your idea addresses" required></textarea>
+        </div>
+
+        <div class="questionBox full">
+          <label for="solution">What is your solution? Explain how your product/service solves that problem.</label>
+          <textarea id="solution" placeholder="Explain your approach, features, or product concept" required></textarea>
+        </div>
+
+        <div class="questionBox half">
+          <label for="who">Who exactly is the customer? (be specific)</label>
+          <input id="who" type="text" placeholder="e.g. urban professionals 25–40 who cook at home twice a week" required>
+        </div>
+
+        <div class="questionBox half">
+          <label for="scaleIdea">Why can this idea scale? (1–2 lines — distribution / unit economics / tech)</label>
+          <input id="scaleIdea" type="text" placeholder="e.g. subscription model, low marginal cost, network effects" required>
+        </div>
+
+        <div class="questionBox half">
+          <label>How original is the idea?</label>
+          <div style="margin-top:8px;">
+            <label><input name="original" type="radio" value="unique" required> Clearly unique / new category</label><br>
+            <label><input name="original" type="radio" value="differentiated"> Differentiated vs competitors</label><br>
+            <label><input name="original" type="radio" value="incremental"> Incremental improvement</label>
+          </div>
+        </div>
+
+        <div class="questionBox half">
+          <label>Market clarity</label>
+          <div style="margin-top:8px;">
+            <label><input name="market" type="radio" value="clear" required> Clear and sizeable market</label><br>
+            <label><input name="market" type="radio" value="niche"> Niche market (specialised)</label><br>
+            <label><input name="market" type="radio" value="unclear"> Market not clearly defined</label>
+          </div>
+        </div>
+
+        <div class="questionBox full">
+          <label for="competitionText">Who are the main competitors and how are you different? (short)</label>
+          <input id="competitionText" type="text" placeholder="List competitors or write 'none' if first mover" required>
+        </div>
+
+        <div class="questionBox half">
+          <label for="revenueIdea">Primary way you’ll make money</label>
+          <select id="revenueIdea" required>
+            <option value="subscriptions">Subscriptions / recurring</option>
+            <option value="product">Product sales</option>
+            <option value="services">Services / B2B fees</option>
+            <option value="ads">Advertising / marketplace</option>
+            <option value="licensing">Licensing / IP</option>
+          </select>
+        </div>
+
+        <div class="questionBox half">
+          <label for="keyMetric">Key metric that proves traction (or will prove it)</label>
+          <input id="keyMetric" type="text" placeholder="e.g. repeat rate, CAC payback, active users" required>
+        </div>
+
+        <div class="questionBox full">
+          <label for="whatNeed">What do you most need right now to move forward? (choose one)</label>
+          <div style="margin-top:8px;">
+            <label><input name="need" type="radio" value="validation" required> Customer validation</label>
+            <label><input name="need" type="radio" value="product" > Product development</label>
+            <label><input name="need" type="radio" value="funding" > Funding</label>
+            <label><input name="need" type="radio" value="team" > Team / hires</label>
+            <label><input name="need" type="radio" value="go-to-market" > Go-to-market / growth</label>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="submitRow">
+        <button class="primary" type="submit" id="submitBtn">Get my ScaleScore</button>
+        <button type="button" class="ghost" id="resetBtn">Reset</button>
+      </div>
+
+      <div class="note">This assessment is an automated idea analysis designed to give you a thoughtful, practical evaluation of your concept. It focuses on idea strength, market-fit signals and potential scalability.</div>
+    </form>
+
+    <footer class="small">Files are processed locally only. Do not upload sensitive legal or personal data you don't want in your browser.</footer>
+  </div>
+
+<script>
+/* Utility helpers */
+function textExtractTokens(text){
+  // normalize, remove punctuation, split, filter stopwords and short words
+  text = (text || '').toLowerCase();
+  text = text.replace(/[’'`“”…—–_@#\/\\\(\)\[\]\{\}\+\=\*\|<>:;.,?!"$%]/g,' ');
+  const words = text.split(/\s+/).filter(Boolean);
+  const stop = new Set([
+    'the','and','a','to','of','in','for','on','is','it','that','this','we','our','with','by','be','as','or','are','an','your','you','at','from','have','has','but','not','will','can','its','which'
+  ]);
+  const tokens = {};
+  for(const w of words){
+    if(w.length < 3) continue;
+    if(stop.has(w)) continue;
+    tokens[w] = (tokens[w] || 0) + 1;
+  }
+  return tokens; // map word -> count
+}
+
+/* merge token maps */
+function mergeTokens(mapA, mapB){
+  for(const k in mapB) mapA[k] = (mapA[k] || 0) + mapB[k];
+  return mapA;
+}
+
+/* Scan text for sector-specific signals (positive & negative lists) */
+const SIGNALS = {
+  tech: {
+    pos: ['saas','platform','api','automation','machine learning','ml','ai','cloud','scale','network effect','marketplace','on-demand','growth'],
+    neg: ['manual','one-off','labour','compliance','low-margin','high-touch']
+  },
+  retail: {
+    pos:['ecommerce','omnichannel','fulfilment','repeat purchase','retention','brand'],
+    neg:['returns','seasonal','low-margin','fragile supply']
+  },
+  services: {
+    pos:['recurring','contract','retainer','enterprise','outsourcing','scalable'],
+    neg:['labour intensive','one-off','custom build']
+  },
+  food: {
+    pos:['franchise','supply chain','subscription box','kitchen','scalable'],
+    neg:['perishable','wastage','regulatory']
+  },
+  finance: {
+    pos:['regtech','underwriting','risk modelling','payments','api','compliance automation'],
+    neg:['legacy','counterparty','heavy regulation']
+  },
+  other: {
+    pos:['scalable','partnership','recurring','platform','network effect'],
+    neg:['labour','one-off','low-margin']
+  }
+};
+
+/* Extract text from PDF (pdf.js). returns lowercased text */
+async function extractTextFromPDF(file){
+  const arrayBuffer = await file.arrayBuffer();
+  const loadingTask = pdfjsLib.getDocument({data: arrayBuffer});
+  const pdf = await loadingTask.promise;
+  let full = '';
+  for(let i=1;i<=pdf.numPages;i++){
+    try{
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const strings = content.items.map(it => it.str || '').join(' ');
+      full += ' ' + strings;
+    } catch(e){
+      console.warn('PDF page parse failed', e);
+    }
+  }
+  return full.toLowerCase();
+}
+
+/* Build a set of signals counts from text */
+function scanSignals(text, sector){
+  const s = SIGNALS[sector] || SIGNALS['other'];
+  const positive = {};
+  const negative = {};
+  for(const kw of s.pos){
+    const re = new RegExp('\\b' + kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\b','gi');
+    const m = text.match(re);
+    if(m) positive[kw] = m.length;
+  }
+  for(const kw of s.neg){
+    const re = new RegExp('\\b' + kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\\b','gi');
+    const m = text.match(re);
+    if(m) negative[kw] = m.length;
+  }
+  return {positive, negative};
+}
+
+/* Compose personalised feedback using detected tokens and answers */
+function craftPersonalisedFeedback(result){
+  const lines = [];
+  const brand = result.brand || 'Your project';
+
+  // Opening
+  lines.push(`${brand} — a concise assessment based on your idea description and documents.`);
+
+  // Strengths summary (top)
+  if(result.strengths.length){
+    lines.push(`Strengths we detected:`);
+    for(const s of result.strengths) lines.push(`• ${s}`);
+  } else {
+    lines.push(`No clear strengths flagged automatically; your idea may still be strong — clarify key differentiators.`);
+  }
+
+  if(result.improvements.length){
+    lines.push(`\nAreas to focus on:`);
+    for(const s of result.improvements) lines.push(`• ${s}`);
+  }
+
+  // Recommendations
+  if(result.recommendations.length){
+    lines.push(`\nRecommendations:`);
+    for(const r of result.recommendations) lines.push(`• ${r}`);
+  }
+
+  // Note about documents
+  lines.push(`\nNote: Documents were analysed in your browser only and not stored on a server.`);
+
+  return lines.join('\n');
+}
+
+/* compute ScaleScore: designed so typical ideas fall 70-85 */
+function computeScaleScoreFromSignals(signals){
+  // signals object contains:
+  // clarity (0-1), originality (0-1), market (0-1), uniqueness (0-1), buzzAdjust (can be +/-)
+  // We'll combine them with weights and bias to produce final score.
+  const w = {clarity:0.28, originality:0.22, market:0.22, uniqueness:0.18, traction:0.10};
+  // base around 78 (so average ideas ~78)
+  let base = 78;
+  let score = base;
+  // add contributions (scaled to +/- 15)
+  score += (signals.clarity - 0.5) * 30 * w.clarity;
+  score += (signals.originality - 0.5) * 30 * w.originality;
+  score += (signals.market - 0.5) * 30 * w.market;
+  score += (signals.uniqueness - 0.5) * 30 * w.uniqueness;
+  score += (signals.traction - 0.5) * 30 * w.traction;
+
+  // buzzAdjust small - can push up or down by up to +/-8
+  score += Math.max(-8, Math.min(8, signals.buzzAdjust));
+
+  // small dampening so only exceptional combos exceed 85
+  if(score > 85){
+    // require very strong signals to push above 85; scale down marginally
+    score = 85 + (score - 85) * 0.6;
+  }
+
+  score = Math.max(0, Math.min(100, Math.round(score)));
+  return score;
+}
+
+/* derive signals from text tokens & answers */
+function analyseIdeaText(allText, answers, sector){
+  // prepare tokens
+  const tokens = textExtractTokens(allText);
+  const totalTokens = Object.values(tokens).reduce((a,b)=>a+b,0) || 1;
+
+  // clarity: length of one_liner + presence of concrete nouns like 'market','subscription','users'
+  const clarityIndicators = ['market','subscription','customer','users','platform','product','service','payment','retain','retain','repeat'];
+  let clarityCount = 0;
+  for(const k of clarityIndicators){
+    if((tokens[k]||0) > 0) clarityCount += 1;
+  }
+  let clarity = Math.min(1, (clarityCount / 4) + Math.min(0.9, answers.one_liner.split(' ').length / 20));
+
+  // originality: presence of words like 'unique','patent','novel','first','differentiator'
+  const originalityIndicators = ['unique','patent','novel','first','differentiator','distinct','proprietary','defensible'];
+  let origCount = 0;
+  for(const k of originalityIndicators) if(tokens[k]) origCount += tokens[k];
+  let originality = Math.min(1, (origCount / 3) + (answers.original === 'unique' ? 0.2 : (answers.original === 'differentiated' ? 0.08 : 0)));
+
+  // market: check explicit market size words and answers.market
+  const marketIndicators = ['global','international','enterprise','small business','consumer','b2b','b2c','segment','niche','addressable','tams'];
+  let marketCount = 0;
+  for(const k of marketIndicators) if(tokens[k]) marketCount += tokens[k];
+  let market = (answers.market === 'clear' ? 0.8 : (answers.market === 'niche' ? 0.6 : 0.4));
+  market = Math.min(1, market + Math.min(0.2, marketCount / 6));
+
+  // uniqueness: look for differentiation phrases in competition text & solution
+  let uniquenessScore = 0;
+  const diffIndicators = ['better','faster','cheaper','lower cost','higher margin','patented','first','only','exclusive','unique'];
+  for(const k of diffIndicators) if(tokens[k]) uniquenessScore += tokens[k];
+  let uniqueness = Math.min(1, (uniquenessScore / 4) + (answers.revenue === 'subscriptions' ? 0.08 : 0));
+
+  // traction: derived from mention of metrics in keyMetric or one_liner (not stage)
+  let traction = 0.5;
+  const km = (answers.keyMetric||'').toLowerCase();
+  if(km.match(/\d/)) traction = 0.7; // numeric metric indicates thinking about metrics
+  if(km.includes('none') || km.includes('idea')) traction = 0.35;
+
+  // buzzword scanning by sector
+  const scan = scanSignals(allText, sector);
+  // compute buzzAdjust: positive words add, negative subtract
+  let buzzAdjust = 0;
+  for(const n in scan.positive) buzzAdjust += Math.min(3, scan.positive[n]) * 0.9;
+  for(const n in scan.negative) buzzAdjust -= Math.min(3, scan.negative[n]) * 1.2;
+
+  // normalize a few signals into [0,1]
+  clarity = Math.max(0, Math.min(1, clarity));
+  originality = Math.max(0, Math.min(1, originality));
+  market = Math.max(0, Math.min(1, market));
+  uniqueness = Math.max(0, Math.min(1, uniqueness));
+  traction = Math.max(0, Math.min(1, traction));
+
+  return { clarity, originality, market, uniqueness, traction, buzzAdjust, scan };
+}
+
+/* build strengths/improvements/recommendations heuristics */
+function buildReportFromAnalysis(answers, signals){
+  const strengths = [], improvements = [], recommendations = [];
+
+  // strengths
+  if(signals.clarity > 0.6) strengths.push('Clear articulation of the idea and target customer.');
+  if(signals.originality > 0.5) strengths.push('Distinctive elements or defensibility called out in your description.');
+  if(signals.market > 0.6) strengths.push('Market appears well-defined and addressable.');
+  if(signals.uniqueness > 0.5) strengths.push('Unique positioning or valuable differentiator detected.');
+  if(signals.traction > 0.6) strengths.push('You reference measurable metrics — that suggests focus on outcomes.');
+
+  // improvements
+  if(signals.clarity <= 0.6) improvements.push('Tighten your one-line and solution statements to clearly state “who, what, why”.');
+  if(signals.originality <= 0.4) improvements.push('Clarify what makes the idea stand out from competitors.');
+  if(signals.market <= 0.5) improvements.push('Define the addressable market more precisely and state who will pay.');
+  if(signals.uniqueness <= 0.4) improvements.push('Highlight defensibility (IP, partnerships, network effects).');
+  if(signals.buzzAdjust < -2) improvements.push('Uploaded materials contain possible concerns; consider addressing these risk areas in the deck.');
+
+  // recommendations actionable
+  recommendations.push('Refine your one-line pitch to explicitly state the customer and measurable benefit.');
+  if(answers.revenue === 'subscriptions') recommendations.push('Focus on retention metrics: reduce churn, improve LTV/CAC ratio.');
+  if(answers.revenue === 'ads') recommendations.push('Demonstrate scalable user acquisition and engagement metrics.');
+  if(answers.revenue === 'product') recommendations.push('Show unit economics and path to repeat purchases.');
+  if(signals.originality > 0.7) recommendations.push('Use the defensibility claims prominently in investor materials.');
+  if(Object.keys(signals.scan.positive).length) recommendations.push('Leverage the strengths found in your deck in your pitch highlights.');
+
+  return { strengths, improvements, recommendations };
+}
+
+/* Main: collect inputs, parse PDFs, run analysis, store result and redirect */
+async function handleSubmit(e){
+  e.preventDefault();
+  const submit = document.getElementById('submitBtn');
+  submit.disabled = true;
+  submit.textContent = 'Analysing...';
+
+  // gather answers
+  const answers = {
+    brand: document.getElementById('brand').value.trim(),
+    sector: document.getElementById('sector').value,
+    one_liner: document.getElementById('one_liner').value.trim(),
+    problem: document.getElementById('problem').value.trim(),
+    solution: document.getElementById('solution').value.trim(),
+    who: document.getElementById('who').value.trim(),
+    scaleIdea: document.getElementById('scaleIdea').value.trim(),
+    original: (document.querySelector('input[name="original"]:checked') || {}).value || '',
+    market: (document.querySelector('input[name="market"]:checked') || {}).value || '',
+    competitionText: document.getElementById('competitionText').value.trim(),
+    revenue: document.getElementById('revenueIdea').value,
+    keyMetric: document.getElementById('keyMetric').value.trim(),
+    need: (document.querySelector('input[name="need"]:checked') || {}).value || ''
+  };
+
+  // Combine all text fields for analysis (idea-focused)
+  let combinedText = ((answers.one_liner || '') + ' ' + (answers.problem || '') + ' ' + (answers.solution || '') + ' ' + (answers.who || '') + ' ' + (answers.scaleIdea || '') + ' ' + (answers.competitionText || '') + ' ' + (answers.keyMetric || '')).toLowerCase();
+
+  // parse uploaded PDFs (client-side) and append text
+  const files = document.getElementById('pdfInput').files;
+  if(files && files.length){
+    for(let i=0;i<files.length;i++){
+      try{
+        const txt = await extractTextFromPDF(files[i]);
+        combinedText += ' ' + txt;
+      } catch(err){
+        console.warn('PDF parse failed', err);
+      }
+    }
+  }
+
+  // also include the brand name
+  if(answers.brand) combinedText += ' ' + answers.brand.toLowerCase();
+
+  // extract tokens and signals
+  const signals = analyseIdeaText(combinedText, answers, answers.sector || 'other');
+
+  // compute ScaleScore (target typical 70-85)
+  const scalescore = computeScaleScoreFromSignals(signals);
+
+  // make report
+  const report = buildReportFromAnalysis(answers, signals);
+
+  // create result object
+  const result = {
+    brand: answers.brand,
+    answers,
+    signals,
+    scaleScore: scalescore,
+    strengths: report.strengths,
+    improvements: report.improvements,
+    recommendations: report.recommendations,
+    timestamp: new Date().toISOString()
+  };
+
+  // save to sessionStorage and redirect to results page
+  sessionStorage.setItem('scalescore_result', JSON.stringify(result));
+  window.location.href = 'results.html';
+}
+
+document.getElementById('quizForm').addEventListener('submit', handleSubmit);
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  document.getElementById('quizForm').reset();
+  document.getElementById('brand').value = '';
+  document.getElementById('pdfInput').value = '';
+});
+</script>
+</body>
+</html>
